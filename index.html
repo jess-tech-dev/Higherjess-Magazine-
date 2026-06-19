@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higherjess Magazine</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0A192F; color: #ffffff; }
+        .accent-color { color: #FF9F43; }
+        .accent-bg { background-color: #FF9F43; }
+    </style>
+</head>
+<body class="font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- BRAND HEADER -->
+    <header class="border-b border-gray-800 bg-[#0A192F]/90 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Adding logo.jpg -->
+                <img src="logo.jpg" alt="Higherjess Business Logo" class="w-8 h-8 object-contain rounded">
+                <span class="text-xl font-black tracking-tight">
+                    Higherjess <span class="accent-color">Magazine</span> 
+                </span>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-gray-300">
+                <button onclick="filterArticles('all')" class="hover:text-[#FF9F43] transition">All Content</button>
+                <button onclick="filterArticles('ai-news')" class="hover:text-[#FF9F43] transition font-semibold flex items-center gap-1">
+                    Live Tech AI Feed 
+                </button>
+                <button onclick="filterArticles('ecommerce')" class="hover:text-[#FF9F43] transition">E-Commerce</button>
+            </nav>
+            <a href="https://www.higherjess.com" class="text-xs uppercase tracking-wider border border-[#FF9F43] text-[#FF9F43] px-3 py-1.5 rounded hover:bg-[#FF9F43] hover:text-[#0A192F] transition font-semibold">
+                Our Agency
+            </a>
+        </div>
+    </header>
+
+    <!-- DYNAMIC FEED CONTAINER -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+        
+        <!-- Hero Featured Post Element -->
+        <section id="hero-post" class="mb-12"></section>
+
+        <!-- Dynamic Content Grid Grid of Recent Articles -->
+        <div class="flex items-center justify-between mb-6">
+            <h2 id="grid-title" class="text-xl font-bold text-gray-300">Latest Updates & Editorial Pieces</h2>
+            <span id="live-indicator" class="hidden text-xs bg-green-500/10 text-green-400 px-2 py-1 rounded animate-pulse font-mono">● LIVE AI STREAM</span>
+        </div>
+        <section id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></section>
+    </main>
+
+    <!-- CONVERTING FOOTER -->
+    <footer class="bg-[#071120] border-t border-gray-800 py-12 mt-12">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-2">Higherjess Magazine</h3>
+                <p class="text-gray-400 text-sm leading-relaxed">E-commerce ecosystems & high-performance application development powered by automated live insights.</p>
+            </div>
+            <div>
+                <h4 class="text-xs uppercase tracking-wider font-bold text-[#FF9F43] mb-3">Direct Support Channels</h4>
+                <ul class="text-sm space-y-1 text-gray-400 font-mono">
+                    <li><a href="mailto:contact@higherjess.com" class="hover:text-white transition">contact@higherjess.com</a></li>
+                    <li><a href="mailto:jessy.fullstack@outlook.com" class="hover:text-white transition">jessy.fullstack@outlook.com</a></li>
+                </ul>
+            </div>
+            <div class="space-x-4 text-sm text-gray-400 flex items-center justify-center md:justify-end">
+                <a href="https://www.higherjess.com" class="hover:underline">Higherjess Business</a>
+                <a href="https://www.higherjess.store" class="hover:underline">Higherjess Store</a>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-gray-900 text-center text-xs text-gray-500">
+            &copy; 2026 Higherjess Business. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
