@@ -1,6 +1,6 @@
 // src/app.js
 
-// 1. Core local content pool (Always displays instantly if AI stream fails or is loading)
+// 1. HARDCODED LOCAL FALLBACKS (Guaranteed to show instantly on page load!)
 let localArticles = [
     {
         id: "local-1",
@@ -28,10 +28,10 @@ let liveAiArticles = [];
 document.addEventListener("DOMContentLoaded", () => {
     renderHeroSection();
     
-    // Instantly fill the layout with your local data first so it is never empty!
+    // Instantly fill the layout with local data so the site is NEVER empty
     filterArticles('all'); 
     
-    // Now quietly try fetching the live AI news stream in the background
+    // Safely pull live tech news directly from Firebase
     fetchLiveTechNews();
 });
 
@@ -41,6 +41,7 @@ function renderHeroSection() {
     
     heroContainer.innerHTML = `
         <div class="bg-[#0D213F] rounded-lg border border-gray-800 overflow-hidden flex flex-col lg:flex-row items-stretch hover:border-[#FF9F43] transition">
+            <!-- Verbatim referencing of asset file main-feature.png -->
             <div class="lg:w-1/2 min-h-[250px] bg-cover bg-center bg-gray-900" style="background-image: url('main-feature.png');"></div>
             <div class="p-8 lg:w-1/2 flex flex-col justify-center">
                 <span class="text-xs uppercase tracking-widest font-bold text-[#FF9F43] bg-[#FF9F43]/10 px-2.5 py-1 rounded self-start">
@@ -58,37 +59,44 @@ function renderHeroSection() {
     `;
 }
 
+// FETCH LIVE TECH NEWS VIA HACKER NEWS OPEN FIREBASE API (No Proxy / Zero CORS Blocks)
 async function fetchLiveTechNews() {
     const indicator = document.getElementById("live-indicator");
     
-    // A highly reliable public open API endpoint that serves clean tech news JSON without keys
-    const techNewsApiUrl = "https://actually-relevant-api.onrender.com/api/stories";
-
     try {
-        const response = await fetch(techNewsApiUrl);
-        if (!response.ok) throw new Error("Network response blocked or rate-limited");
+        // Step A: Fetch top new story IDs
+        const topStoriesResponse = await fetch("https://hacker-news.firebaseio.com/v0/newstories.json");
+        const storyIds = await topStoriesResponse.json();
         
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-            // Map the fetched data to your magazine template design
-            liveAiArticles = data.slice(0, 4).map((item, index) => ({
-                id: `ai-${index}`,
-                title: item.title,
-                summary: item.blurb || item.summary || "Latest technological event breaking online. Read insights and technical community feedback surrounding this development via the external source link.",
-                category: "ai-news",
-                date: "LIVE NOW",
-                readTime: "AI Feed",
-                url: item.url || "https://www.higherjess.com"
-            }));
-            
-            if (indicator) indicator.classList.remove("hidden");
-            
-            // Refresh feed to merge live items alongside your local ones seamlessly
-            filterArticles('all');
+        // Step B: Take the top 4 stories and fetch their individual text data
+        const targetedIds = storyIds.slice(0, 4);
+        const fetchedStories = await Promise.all(
+            targetedIds.map(async (id) => {
+                const storyDetailsResponse = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
+                return await storyDetailsResponse.json();
+            })
+        );
+
+        // Step C: Format the stories into your layout schema
+        liveAiArticles = fetchedStories.filter(story => story && story.title).map((story, index) => ({
+            id: `ai-${index}`,
+            title: story.title,
+            summary: `Breaking technological update active in global development discussion. Read structural feedback, community evaluations, and full tech context natively via this tracking link.`,
+            category: "ai-news",
+            date: "LIVE FEED",
+            readTime: `${story.score || 1} points`,
+            url: story.url || `https://news.ycombinator.com/item?id=${story.id}`
+        }));
+
+        if (liveAiArticles.length > 0 && indicator) {
+            indicator.classList.remove("hidden");
         }
+
+        // Re-run filter to elegantly append the new live stories alongside your local ones
+        filterArticles('all');
+
     } catch (error) {
-        console.warn("Live API stream offline or CORS blocked. Staying safe with local content fallback stack.", error);
+        console.error("Live Firebase stream blocked. Safely reading from local fallback array.", error);
     }
 }
 
