@@ -1,4 +1,4 @@
-// posts.js - Your Magazine's Custom Content Database
+// posts.js - Updated Content Database with Local Images
 const magazineArticles = [
     {
         id: "post-1",
@@ -7,7 +7,7 @@ const magazineArticles = [
         category: "tech",
         date: "June 19, 2026",
         readTime: "5 min read",
-        content: "Full markdown or HTML story paragraph strings go here when expanding..."
+        image: "Gemini_Generated_Image_wmpn6rwmpn6rwmpn.png" // Displays your high-tech workstation graphic
     },
     {
         id: "post-2",
@@ -16,7 +16,7 @@ const magazineArticles = [
         category: "ecommerce",
         date: "June 18, 2026",
         readTime: "4 min read",
-        content: "Full content text here..."
+        image: "Bwwweeeeeeerr_20251226_122415_0000.jpg" // Links your clean style cover design
     },
     {
         id: "post-3",
@@ -25,6 +25,6 @@ const magazineArticles = [
         category: "tech",
         date: "June 15, 2026",
         readTime: "6 min read",
-        content: "Full content text here..."
+        image: "161c339b45e5a463d06d5e82d2b3c727.jpg" // Uses your interactive development lab setting photo
     }
 ];
