@@ -1,23 +1,51 @@
-// app.js - Universal Cross-Device Magazine Layout Engine
+// app.js - Optimized Magazine Engine with Branding Text Injection
 
 document.addEventListener("DOMContentLoaded", () => {
     try {
         buildDesktopNavigation();
         buildMobileNavigation();
+        renderHeroBranding(); // Load core brand layout & feature photo instantly
         filterData('all');
     } catch (e) {
         console.error("Layout compilation halted safely:", e);
     }
 });
 
-// Category Icon Configuration Maps
 const categoryIcons = {
     "World": "🌍", "Arts & Culture": "🎨", "Photography": "📸", 
     "Entertainment": "🎬", "Food": "🍽️", "Technology": "💻", 
     "Africa": "🇨🇩", "Inspiration": "✝️"
 };
 
-// 1. RENDER DESKTOP HOVER DROPDOWN STRIPS
+// 1. BRAND HERO IMAGE AND TEXT RENDERING STRIP
+function renderHeroBranding() {
+    const target = document.getElementById("hero-branding-block");
+    if (!target) return;
+
+    target.innerHTML = `
+        <div class="bg-[#071120] rounded-xl border border-gray-800 overflow-hidden flex flex-col lg:flex-row items-stretch shadow-2xl">
+            <div class="lg:w-7/12 min-h-[260px] md:min-h-[360px] bg-cover bg-center" style="background-image: url('main-feature.png');"></div>
+            
+            <div class="p-6 md:p-10 lg:w-5/12 flex flex-col justify-center bg-gradient-to-br from-[#071120] to-[#0A192F]">
+                <span class="text-[10px] font-mono tracking-widest font-bold text-[#FF9F43] bg-[#FF9F43]/10 px-2.5 py-1 rounded self-start uppercase">
+                    Strategic Creative Workspace
+                </span>
+                <h1 class="text-xl md:text-2xl font-black mt-4 mb-3 text-white leading-tight">
+                    Engineering Premium Fast-Loading Environments
+                </h1>
+                <p class="text-gray-400 text-xs md:text-sm leading-relaxed mb-4">
+                    Higherjess Business integrates clean system code with elegant designs. We build modern landing fields, interactive multi-page catalogs, and performant web spaces that scale operations seamlessly.
+                </p>
+                <div class="flex items-center gap-3 pt-2 border-t border-gray-800/60 mt-2">
+                    <img src="android-chrome-512x512.jpg" alt="" class="w-6 h-6 rounded-full border border-gray-700">
+                    <span class="text-[11px] text-gray-500 font-mono">Higherjess Operational Desk • 2026</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 2. RENDER DESKTOP HOVER DROPDOWNS
 function buildDesktopNavigation() {
     const hook = document.getElementById("desktop-menu-hook");
     if (!hook) return;
@@ -44,7 +72,7 @@ function buildDesktopNavigation() {
     });
 }
 
-// 2. RENDER MOBILE TOGGLE DROPDOWNS & ACCORDIONS
+// 3. RENDER MOBILE TOGGLE DROPDOWNS
 function buildMobileNavigation() {
     const hook = document.getElementById("mobile-menu-hook");
     if (!hook) return;
@@ -77,28 +105,31 @@ function buildMobileNavigation() {
     });
 }
 
-// Mobile Interface Interaction Control Logic
 function toggleMobileDrawer(open) {
     const drawer = document.getElementById("mobile-drawer");
     if (!drawer) return;
-    if (open) {
-        drawer.classList.remove("translate-x-full");
-    } else {
-        drawer.classList.add("translate-x-full");
-    }
+    if (open) drawer.classList.remove("translate-x-full");
+    else drawer.classList.add("translate-x-full");
 }
 
 function toggleMobileAccordion(id) {
     const panel = document.getElementById(id);
-    if (!panel) return;
-    panel.classList.toggle("hidden");
+    if (panel) panel.classList.toggle("hidden");
 }
 
-// 3. CENTRAL FILTER CONTROLLER PIPELINE
+// 4. CENTRAL FILTER SYSTEM
 function filterData(type, targetValue = '') {
     const title = document.getElementById("view-title");
     const counter = document.getElementById("items-counter");
+    const heroBox = document.getElementById("hero-branding-block");
     let results = [];
+
+    // Only show the prominent hero graphic on the complete "Home" overview channel
+    if (type === 'all' && heroBox) {
+        heroBox.style.display = "block";
+    } else if (heroBox) {
+        heroBox.style.display = "none";
+    }
 
     if (type === 'all') {
         title.innerText = "Latest Editorial Pieces";
@@ -107,7 +138,6 @@ function filterData(type, targetValue = '') {
         title.innerText = "About Higherjess Business";
         renderAboutView();
         if(counter) counter.innerText = "Company Logs";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
     } else if (type === 'section') {
         title.innerText = `${targetValue}`;
@@ -119,10 +149,9 @@ function filterData(type, targetValue = '') {
 
     if(counter) counter.innerText = `${results.length} Stories`;
     displayGridContent(results);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 4. SECURE CARD RENDERING GRID ENGINE
+// 5. GRID CARD WRAPPER ENGINE
 function displayGridContent(items) {
     const gridContainer = document.getElementById("articles-grid");
     if (!gridContainer) return;
@@ -137,7 +166,7 @@ function displayGridContent(items) {
     }
 
     gridContainer.innerHTML = items.map(article => `
-        <article class="bg-[#07172E] rounded-lg border border-gray-800 overflow-hidden flex flex-col justify-between group shadow-lg">
+        <article class="bg-[#07172E] rounded-lg border border-gray-800 overflow-hidden flex flex-col justify-between group shadow-lg hover:border-gray-700 transition">
             <div>
                 <div class="h-52 w-full overflow-hidden bg-gray-900 relative">
                     <img 
