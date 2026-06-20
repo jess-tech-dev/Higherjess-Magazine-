@@ -1,34 +1,38 @@
-// app.js - Magazine Core Engine
+// app.js - Universal Cross-Device Magazine Layout Engine
 
 document.addEventListener("DOMContentLoaded", () => {
-    buildNavigationMenu();
-    renderHeroSection();
-    filterData('all');
+    try {
+        buildDesktopNavigation();
+        buildMobileNavigation();
+        filterData('all');
+    } catch (e) {
+        console.error("Layout compilation halted safely:", e);
+    }
 });
 
-// 1. Generate Dropdown Menus Dynamically from menuTaxonomy Structure
-function buildNavigationMenu() {
-    const hook = document.getElementById("dynamic-menu-hook");
+// Category Icon Configuration Maps
+const categoryIcons = {
+    "World": "🌍", "Arts & Culture": "🎨", "Photography": "📸", 
+    "Entertainment": "🎬", "Food": "🍽️", "Technology": "💻", 
+    "Africa": "🇨🇩", "Inspiration": "✝️"
+};
+
+// 1. RENDER DESKTOP HOVER DROPDOWN STRIPS
+function buildDesktopNavigation() {
+    const hook = document.getElementById("desktop-menu-hook");
     if (!hook) return;
 
-    // Emojis mapped to your exact header categories
-    const icons = {
-        "World": "🌍", "Arts & Culture": "🎨", "Photography": "📸", 
-        "Entertainment": "🎬", "Food": "🍽️", "Technology": "💻", 
-        "Africa": "🇨🇩", "Inspiration": "✝️"
-    };
-
+    hook.innerHTML = "";
     Object.keys(menuTaxonomy).forEach(section => {
-        const icon = icons[section] || "📄";
+        const icon = categoryIcons[section] || "📄";
+        const dropdownContainer = document.createElement("div");
+        dropdownContainer.className = "relative desktop-dropdown inline-block";
         
-        const dropdownDiv = document.createElement("div");
-        dropdownDiv.className = "relative dropdown inline-block";
-        
-        dropdownDiv.innerHTML = `
-            <button onclick="filterData('section', '${section}')" class="px-3 py-3 text-gray-300 hover:text-[#FF9F43] transition flex items-center gap-1">
-                ${icon} ${section} <span class="text-[10px] text-gray-500">▼</span>
+        dropdownContainer.innerHTML = `
+            <button onclick="filterData('section', '${section}')" class="px-4 py-3 text-gray-300 hover:text-[#FF9F43] flex items-center gap-1 transition">
+                ${icon} ${section} <span class="text-[9px] text-gray-600">▼</span>
             </button>
-            <div class="dropdown-menu absolute hidden bg-[#071120] border border-gray-800 rounded shadow-xl min-w-[180px] py-1 z-50">
+            <div class="desktop-dropdown-menu absolute hidden bg-[#071120] border border-gray-800 rounded shadow-2xl min-w-[200px] py-1 z-50">
                 ${menuTaxonomy[section].map(sub => `
                     <button onclick="event.stopPropagation(); filterData('subsection', '${sub}')" class="w-full text-left px-4 py-2 text-xs text-gray-400 hover:bg-[#0D213F] hover:text-[#FF9F43] transition">
                         ${sub}
@@ -36,28 +40,61 @@ function buildNavigationMenu() {
                 `).join('')}
             </div>
         `;
-        hook.appendChild(dropdownDiv);
+        hook.appendChild(dropdownContainer);
     });
 }
 
-function renderHeroSection() {
-    const heroContainer = document.getElementById("hero-showcase");
-    if (!heroContainer) return;
+// 2. RENDER MOBILE TOGGLE DROPDOWNS & ACCORDIONS
+function buildMobileNavigation() {
+    const hook = document.getElementById("mobile-menu-hook");
+    if (!hook) return;
 
-    heroContainer.innerHTML = `
-        <div class="bg-[#0D213F] rounded-lg border border-gray-800 overflow-hidden flex flex-col lg:flex-row items-stretch">
-            <div class="lg:w-2/3 min-h-[300px] bg-cover bg-center" style="background-image: url('main-feature.png');"></div>
-            <div class="p-8 lg:w-1/3 flex flex-col justify-center bg-[#071120]/50">
-                <span class="text-xs uppercase tracking-widest font-mono font-bold text-[#FF9F43]">Core Enterprise Mission</span>
-                <h1 class="text-xl md:text-2xl font-black mt-3 mb-3 text-white">Engineering Fast-Loading Ecosystems</h1>
-                <p class="text-gray-400 text-xs leading-relaxed mb-4">Connecting digital storefronts, customized profiles, and media visibility pipelines seamlessly under Higherjess Business rules.</p>
-                <div class="text-[10px] text-gray-500 font-mono">Current Context: Kinshasa, DRC • Corporate Notice</div>
-            </div>
-        </div>
+    hook.innerHTML = `
+        <button onclick="toggleMobileDrawer(false); filterData('all');" class="w-full text-left py-3 px-2 text-gray-300 border-b border-gray-900 block font-bold">🏠 Home Feed</button>
     `;
+
+    Object.keys(menuTaxonomy).forEach((section, index) => {
+        const icon = categoryIcons[section] || "📄";
+        const wrapper = document.createElement("div");
+        wrapper.className = "border-b border-gray-900 py-1";
+
+        wrapper.innerHTML = `
+            <div class="flex items-center justify-between w-full py-2 px-2 text-gray-300 font-semibold" onclick="toggleMobileAccordion('acc-${index}')">
+                <span onclick="event.stopPropagation(); toggleMobileDrawer(false); filterData('section', '${section}');" class="hover:text-[#FF9F43]">
+                    ${icon} ${section}
+                </span>
+                <span class="text-xs text-gray-500 font-mono px-2">＋</span>
+            </div>
+            <div id="acc-${index}" class="hidden pl-6 pr-2 py-1 space-y-1 bg-[#0A192F]/40 rounded">
+                ${menuTaxonomy[section].map(sub => `
+                    <button onclick="toggleMobileDrawer(false); filterData('subsection', '${sub}');" class="w-full text-left py-2 text-xs text-gray-400 hover:text-[#FF9F43] block">
+                        • ${sub}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        hook.appendChild(wrapper);
+    });
 }
 
-// 2. High-Performance Filtering Controller Block
+// Mobile Interface Interaction Control Logic
+function toggleMobileDrawer(open) {
+    const drawer = document.getElementById("mobile-drawer");
+    if (!drawer) return;
+    if (open) {
+        drawer.classList.remove("translate-x-full");
+    } else {
+        drawer.classList.add("translate-x-full");
+    }
+}
+
+function toggleMobileAccordion(id) {
+    const panel = document.getElementById(id);
+    if (!panel) return;
+    panel.classList.toggle("hidden");
+}
+
+// 3. CENTRAL FILTER CONTROLLER PIPELINE
 function filterData(type, targetValue = '') {
     const title = document.getElementById("view-title");
     const counter = document.getElementById("items-counter");
@@ -69,51 +106,58 @@ function filterData(type, targetValue = '') {
     } else if (type === 'About') {
         title.innerText = "About Higherjess Business";
         renderAboutView();
-        if(counter) counter.innerText = "Corporate Profile";
+        if(counter) counter.innerText = "Company Logs";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
     } else if (type === 'section') {
-        title.innerText = `${targetValue} Feed`;
+        title.innerText = `${targetValue}`;
         results = magazineArticles.filter(a => a.section === targetValue);
     } else if (type === 'subsection') {
-        title.innerText = `Track: ${targetValue}`;
+        title.innerText = `${targetValue}`;
         results = magazineArticles.filter(a => a.subsection === targetValue);
     }
 
-    if(counter) counter.innerText = `${results.length} Stories Found`;
+    if(counter) counter.innerText = `${results.length} Stories`;
     displayGridContent(results);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 3. Grid Renderer Engine
+// 4. SECURE CARD RENDERING GRID ENGINE
 function displayGridContent(items) {
     const gridContainer = document.getElementById("articles-grid");
     if (!gridContainer) return;
 
-    if (items.length === 0) {
+    if (!items || items.length === 0) {
         gridContainer.innerHTML = `
-            <div class="col-span-full py-12 text-center text-sm text-gray-500 italic bg-[#07172E]/30 rounded border border-gray-900">
-                No articles published under this layout track yet. Check back soon!
+            <div class="col-span-full py-16 text-center text-xs text-gray-500 italic bg-[#07172E]/40 rounded border border-gray-900">
+                No articles published under this category track yet.
             </div>
         `;
         return;
     }
 
     gridContainer.innerHTML = items.map(article => `
-        <article class="bg-[#07172E] rounded-lg border border-gray-800 overflow-hidden hover:border-gray-700 transition flex flex-col justify-between group">
+        <article class="bg-[#07172E] rounded-lg border border-gray-800 overflow-hidden flex flex-col justify-between group shadow-lg">
             <div>
-                <div class="h-48 w-full overflow-hidden bg-gray-900 relative">
-                    <img src="${article.image}" alt="${article.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='main-feature.png';">
-                    <span class="absolute top-3 left-3 text-[10px] uppercase font-mono font-bold tracking-wider bg-[#0A192F]/80 text-[#FF9F43] px-2 py-0.5 rounded border border-gray-800">
+                <div class="h-52 w-full overflow-hidden bg-gray-900 relative">
+                    <img 
+                        src="${article.image}" 
+                        alt="" 
+                        class="w-full h-full object-cover group-hover:scale-102 transition duration-300"
+                        onerror="this.onerror=null; this.src='Bwwweeeeeeerr_20251226_122415_0000.jpg';"
+                    />
+                    <span class="absolute top-3 left-3 text-[9px] uppercase font-mono font-bold tracking-wider bg-[#0A192F]/90 text-[#FF9F43] px-2 py-0.5 rounded border border-gray-800/60 shadow-md">
                         ${article.subsection}
                     </span>
                 </div>
                 <div class="p-5">
-                    <h3 class="text-base font-bold text-white group-hover:text-[#FF9F43] transition line-clamp-2 mb-2">${article.title}</h3>
+                    <h3 class="text-base font-bold text-white group-hover:text-[#FF9F43] transition duration-200 mb-2 leading-snug">${article.title}</h3>
                     <p class="text-gray-400 text-xs leading-relaxed line-clamp-3">${article.summary}</p>
                 </div>
             </div>
-            <div class="p-5 pt-0 mt-4 flex items-center justify-between text-[11px] font-mono text-gray-500 border-t border-gray-800/40">
+            <div class="p-5 pt-0 mt-2 flex items-center justify-between text-[10px] font-mono text-gray-500 border-t border-gray-800/30">
                 <span>${article.date}</span>
-                <span class="text-[#FF9F43] font-sans font-bold cursor-pointer hover:underline">Read Info ↗</span>
+                <span class="text-[#FF9F43] font-sans font-bold group-hover:underline cursor-pointer">Read ↗</span>
             </div>
         </article>
     `).join('');
@@ -124,14 +168,10 @@ function renderAboutView() {
     if (!gridContainer) return;
 
     gridContainer.innerHTML = `
-        <div class="col-span-full bg-[#07172E] p-8 rounded-lg border border-gray-800 max-w-3xl">
-            <h3 class="text-lg font-bold text-[#FF9F43] mb-4">Digital Solutions Agency Structure</h3>
-            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                Higherjess Business specializes in building premium web applications, bespoke professional portfolios, and high-performance online stores via our dedicated division at <span class="text-white font-semibold">www.higherjess.store</span>.
-            </p>
-            <p class="text-gray-400 text-xs font-mono">
-                For administrative operations, reach our desks directly via contact@higherjess.com.
-            </p>
+        <div class="col-span-full bg-[#07172E] p-6 lg:p-8 rounded-lg border border-gray-800 max-w-3xl text-xs lg:text-sm text-gray-300 leading-relaxed shadow-xl">
+            <h3 class="text-base font-bold text-[#FF9F43] mb-3 font-mono">Higherjess Business Architecture</h3>
+            <p class="mb-4">Deploying custom, production-grade systems, tailored professional portfolios, and conversion-optimized e-commerce pipelines configured for global reach.</p>
+            <p class="text-gray-500 font-mono text-[10px]">Environment Target: Native PC Workspace Build System</p>
         </div>
     `;
 }
