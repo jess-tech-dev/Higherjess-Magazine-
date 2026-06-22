@@ -18,7 +18,7 @@ const magazineArticles = [
         subsection: "Design",
         date: "June 19, 2026",
         readTime: "4 min",
-        image: "Bwwweeeeeeerr_20251226_122415_0000.jpg"
+        image: "new-denim.jpg"
     },
     {
         id: "post-3",
