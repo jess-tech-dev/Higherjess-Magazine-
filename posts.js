@@ -49,9 +49,9 @@ const magazineArticles = [
         date: "June 15, 2026",
         readTime: "6 min",
         image: "f5d632798191ab4a2e96a0da460e82ee.jpg"
-    }
+    },
 
-{
+   {
         id: "post-4",
         title: "The Culinary Masterclass of Congolese Liboke",
         summary: "Exploring the traditional methods of slow-cooking spiced fish wrapped in banana leaves over open embers.",
